@@ -1,4 +1,4 @@
-// generator.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// generator.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include <stdio.h>
@@ -11,21 +11,21 @@ using namespace std;
 
 #define ISDEBUG   0
 
-char SetupFilePath[260] = {0};			    //"D:\\code\\ctparcel\\setup\\Debug\\ctparcel.exe"
-char ProgramName[100] = {0};				//"xxx°²×°°ü"
+char SetupFilePath[260] = {0};    		    //"D:\\code\\ctparcel\\setup\\Debug\\ctparcel.exe"
+char ProgramName[100] = {0};				//"xxxå®‰è£…åŒ…"
 char FolderName[260] = {0};				    //"e:\\1"
 char compressStr[10] = {0};                 //"zip"
 char AutoRunName[150] = {0};                //"autorun.exe"
 
 //////////////////////////////////////////////////////////////////////////
-// ÔÚÉú³ÉµÄ×îÖÕexeµÄÎÄ¼şºóÃæÌí¼ÓÒ»¸ö½á¹¹,Õâ¸ö½á¹¹°üº¬ÁË±ØĞëµÄUIÍ¼Æ¬/ÅäÖÃ/Ñ¹ËõÎÄ¼şµÈ
+// åœ¨ç”Ÿæˆçš„æœ€ç»ˆexeçš„æ–‡ä»¶åé¢æ·»åŠ ä¸€ä¸ªç»“æ„,è¿™ä¸ªç»“æ„åŒ…å«äº†å¿…é¡»çš„UIå›¾ç‰‡/é…ç½®/å‹ç¼©æ–‡ä»¶ç­‰
 struct fileblock
 {
-    char relativepath[150];			// ÁÙÊ±ÎÄ¼ş=".tmp" or Ïà¶ÔÂ·¾¶ : aa/bb/
-    char filename[50];				// ÎÄ¼şÃû   : a.dll   >> ÄÇÃ´Õâ¸öÎÄ¼şµÄÂ·¾¶: setuppath/aa/bb/a.dll
-    DWORD filesize;					// ´óĞ¡
+    char relativepath[150];			// ä¸´æ—¶æ–‡ä»¶=".tmp" or ç›¸å¯¹è·¯å¾„ : aa/bb/
+    char filename[50];				// æ–‡ä»¶å   : a.dll   >> é‚£ä¹ˆè¿™ä¸ªæ–‡ä»¶çš„è·¯å¾„: setuppath/aa/bb/a.dll
+    DWORD filesize;					// å¤§å°
                                     //
-                                    // +sizeof(fileblock) Ö®ºó¾ÍÊÇÎÄ¼şÄÚÈİ byte* filebuf
+                                    // +sizeof(fileblock) ä¹‹åå°±æ˜¯æ–‡ä»¶å†…å®¹ byte* filebuf
 };
 #define RELATIVEPATH_TMP	".tmp"
 
@@ -33,13 +33,13 @@ struct addedSector
 {
     DWORD verifycode;               // 0
 
-    char compressType[10];			// Ñ¹Ëõ·½Ê½
-    char programName[20];			// °²×°°üµÄ³ÌĞòÃû
-    char autorun[150];              // ×Ô¶¯ÔËĞĞ³ÌĞòµÄÏà¶ÔÂ·¾¶
+    char compressType[10];			// å‹ç¼©æ–¹å¼
+    char programName[20];			// å®‰è£…åŒ…çš„ç¨‹åºå
+    char autorun[150];              // è‡ªåŠ¨è¿è¡Œç¨‹åºçš„ç›¸å¯¹è·¯å¾„
 
-    int nfiles;						// ×ÜÎÄ¼şÊıÁ¿
+    int nfiles;						// æ€»æ–‡ä»¶æ•°é‡
                                     //
-                                    // +sizeof(addedSector) Ö®ºó¾ÍÊÇÃ¿¸öÎÄ¼ş¿é fileblock
+                                    // +sizeof(addedSector) ä¹‹åå°±æ˜¯æ¯ä¸ªæ–‡ä»¶å— fileblock
 };
 
 
@@ -56,8 +56,8 @@ bool appendFile( const char* filename, byte* buf, DWORD size )
     }
     else
     {
-        //ÎªÁË·ÀÖ¹´ÅÅÌµÄcacheµ¼ÖÂµÄfcloseºó²»Á¢¼´Ë¢ĞÂÎÄ¼ş
-        //ÕâÀïÒ»Ö±³¢ÊÔÈ¥´ò¿ªÎÄ¼ş
+        //ä¸ºäº†é˜²æ­¢ç£ç›˜çš„cacheå¯¼è‡´çš„fcloseåä¸ç«‹å³åˆ·æ–°æ–‡ä»¶
+        //è¿™é‡Œä¸€ç›´å°è¯•å»æ‰“å¼€æ–‡ä»¶
         Sleep( 1 );
         //printf("fopen err: %d\n",GetLastError());
         return appendFile( filename, buf, size );
@@ -68,7 +68,7 @@ bool appendFile( const char* filename, byte* buf, DWORD size )
 
 
 //
-// Ñ¹Ëõµ¥¸öÎÄ¼ş [ÎÄ¼şÖ±½Ó±»Ñ¹Ëõ²¢Ìæ»»µôÔ­Ê¼ÎÄ¼ş]
+// å‹ç¼©å•ä¸ªæ–‡ä»¶ [æ–‡ä»¶ç›´æ¥è¢«å‹ç¼©å¹¶æ›¿æ¢æ‰åŸå§‹æ–‡ä»¶]
 //
 void compressSingleFile(char* filename)
 {
@@ -88,7 +88,7 @@ void compressSingleFile(char* filename)
 }
 
 //
-// Ìí¼ÓÎÄ¼ş
+// æ·»åŠ æ–‡ä»¶
 //
 int appendfilecount = 0;
 bool addFile( char* orifilename, char* relativepath )
@@ -124,7 +124,7 @@ bool addFile( char* orifilename, char* relativepath )
         strcpy( ns->filename, shortFileName );
         PBYTE filebuf = (PBYTE)((DWORD)ns + sizeof( fileblock ));
 
-        FILE* f = fopen( filename, "rb+" );
+        FILE* f = fopen( filename, "rb" );
         if(f)
         {
             fread( filebuf, fsize, 1, f );
@@ -135,6 +135,14 @@ bool addFile( char* orifilename, char* relativepath )
             else
                 printf( "[%d] addFile error!!! =>  %s\\%s\n", ++appendfilecount, ns->relativepath, ns->filename );
         }
+        else
+        {
+            printf( "%s OPEN ERROR!  err = %d\n", orifilename,GetLastError() );
+        }
+    }
+    else
+    {
+        puts( "ERROR SIZE!" );
     }
 
     DeleteFileA( filename );
@@ -144,15 +152,15 @@ bool addFile( char* orifilename, char* relativepath )
 
 
 //
-// Ìí¼ÓÎÄ¼ş¼ĞÄÚµÄËùÓĞÎÄ¼ş
+// æ·»åŠ æ–‡ä»¶å¤¹å†…çš„æ‰€æœ‰æ–‡ä»¶
 //
-// È«¾Ö:
+// å…¨å±€:
 list<string> allfiles;
 
 
-// ¸ñÊ½: e:\\1
+// æ ¼å¼: e:\\1
 char rootdirpath[260] = {0};
-// ¸ñÊ½: 2\\3
+// æ ¼å¼: 2\\3
 char relativeTmpPath[260];
 //
 char* getRelativePath( char* allPath )
@@ -204,7 +212,7 @@ bool _initFolder( char* lpPath )
             if(strcmp( FindFileData.cFileName, "." ) != 0 &&
                 strcmp( FindFileData.cFileName, ".." ) != 0)
             {
-                //·¢ÏÖ×ÓÄ¿Â¼£¬µİ¹éÖ®
+                //å‘ç°å­ç›®å½•ï¼Œé€’å½’ä¹‹
                 char szFile[MAX_PATH] = {0};
                 strcpy( szFile, lpPath );
                 strcat( szFile, "\\" );
@@ -214,10 +222,10 @@ bool _initFolder( char* lpPath )
         }
         else
         {
-            //ÅÅ³ıÕâ¸öÎÄ¼ş
+            //æ’é™¤è¿™ä¸ªæ–‡ä»¶
             if(strcmp( FindFileData.cFileName, "Thumbs.db" ) != 0)
             {
-                //½«ËùÓĞÎÄ¼şµÄpath·ÅÈëlist
+                //å°†æ‰€æœ‰æ–‡ä»¶çš„pathæ”¾å…¥list
                 char allPath[260];
                 wsprintfA( allPath, "%s\\%s", lpPath, FindFileData.cFileName );
                 allfiles.push_back( allPath );
@@ -238,7 +246,7 @@ bool initFolder( char* rootdir )
 
 
 //
-// Ìí¼Ó±ØÒª½á¹¹
+// æ·»åŠ å¿…è¦ç»“æ„
 //
 bool addLastSector( int filescount, char* programName, char* compress,char* autorun )
 {
@@ -253,32 +261,29 @@ bool addLastSector( int filescount, char* programName, char* compress,char* auto
 
 
 //
-// ¿ªÊ¼Éú³É
+// å¼€å§‹ç”Ÿæˆ
 //
 void generateSetupFile()
 {
     // ->
     // start!
-    initFolder( FolderName );
+	// copy the template setup-exe to SetupFilePath! -fix
+	CopyFileA( "setuptmp.exe", SetupFilePath, FALSE );
+    
+	// init files struct
+	initFolder( FolderName );
+
     // add addedSector to end of setup-file 
     addLastSector( allfiles.size() + 4, ProgramName, compressStr, AutoRunName );
     // ->
-    // add every file to end of setup-file
+    // add all files to setup-file-tail
     //
-    // setup tmp files
-#if ISDEBUG
-    addFile( "e:\\str.txt", RELATIVEPATH_TMP );
-    addFile( "e:\\WizardImage.bmp", RELATIVEPATH_TMP );
-    addFile( "e:\\WizardSmallImage.bmp", RELATIVEPATH_TMP );
-    addFile( "e:\\folders.bmp", RELATIVEPATH_TMP );
-#else
-    //ÏÈ°Ñ¿ÕµÄ°²×°exe¿½±´µ½Éú³ÉÄ¿±êÀïÈ¥,È»ºóÈ¥Ìí¼ÓÎÄ¼şºÍÅäÖÃ
-    CopyFileA( "setuptmp.exe", SetupFilePath, FALSE );
+    // add tmp files
     addFile( "str.txt", RELATIVEPATH_TMP );
     addFile( "WizardImage.bmp", RELATIVEPATH_TMP );
     addFile( "WizardSmallImage.bmp", RELATIVEPATH_TMP );
     addFile( "folders.bmp", RELATIVEPATH_TMP );
-#endif
+
     // ->
     // other files
     addFolder( );
@@ -289,17 +294,17 @@ void generateSetupFile()
 int main( int argc, char** argv )
 {
 #if ISDEBUG
-    strcpy( SetupFilePath, "D:\\´úÂë\\ctparcel\\setup\\Release\\ctparcel.exe" );
-    strcpy( ProgramName, "TestÓÎÏ·" );
-    strcpy( FolderName, "e:\\1" );
-    strcpy( compressStr, "zip" );
-    strcpy( AutoRunName, "update.exe" );
-    generateSetupFile();
-    return 0;
+	strcpy( SetupFilePath, "D:\\ä»£ç \\ctparcel\\setup\\Release\\ctparcel.exe" );
+	strcpy( ProgramName, "SetupTest" );
+	strcpy( FolderName, "D:\\ä»£ç \\123" );
+	strcpy( compressStr, "zip" );
+	strcpy( AutoRunName, "update.exe" );
+	generateSetupFile();
+	return 0;
 #endif
 
     //-------------------------------------------------------------------------------
-    //					   Éú³ÉÄ¿±ê		  °²×°°üÖ÷Ãû	    ÎÄ¼ş¼Ğ    Ñ¹Ëõ     ×Ô¶¯ÔËĞĞ
+    //					   ç”Ÿæˆç›®æ ‡		  å®‰è£…åŒ…ä¸»å	    æ–‡ä»¶å¤¹    å‹ç¼©     è‡ªåŠ¨è¿è¡Œ
     //
     // arg -> generator   -c:\setup.exe  -programName  -folder   -zip    -xxxx.exe
     //                                                           -none
@@ -330,7 +335,7 @@ int main( int argc, char** argv )
         return 0;
     }
 
-    puts( "´íÎóµÄ²ÎÊı" );
+    puts( "é”™è¯¯çš„å‚æ•°" );
     return 0;
 }
 
