@@ -1,7 +1,7 @@
 ## ctParcel 打包安装生成器 (仿NSIS界面)  
 
 
-### 模板EXE:　[点击前往](http://git.oschina.net/codetimer/ctParcel)
+点击前往模板EXE:　[http://git.oschina.net/codetimer/ctParcel](http://git.oschina.net/codetimer/ctParcel)
 
 ![输入图片说明](http://git.oschina.net/uploads/images/2016/0801/132116_f843ff6a_632350.png "在这里输入图片标题")
 
