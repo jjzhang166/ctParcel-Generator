@@ -1,6 +1,6 @@
 ### 模板EXE中已经指定了详细的结构,生成器只要按照结构写入文件尾部即可
 
-模板ｅｘｅ:　[传送链接](http://git.oschina.net/codetimer/ctParcel)
+模板EXE:　[传送链接](http://git.oschina.net/codetimer/ctParcel)
 
 ![输入图片说明](http://git.oschina.net/uploads/images/2016/0801/132116_f843ff6a_632350.png "在这里输入图片标题")
 
